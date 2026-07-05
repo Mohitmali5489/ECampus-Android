@@ -19,6 +19,11 @@ const config: CapacitorConfig = {
       backgroundColor: "#ffffff",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP"
+    },
+    StatusBar: {
+      style: 'LIGHT', // Makes the status bar text/icons dark
+      backgroundColor: '#ffffff', // White background
+      overlaysWebView: false // Tells it not to float over your website
     }
   }
 };
