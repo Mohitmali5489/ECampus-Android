@@ -105,19 +105,43 @@ jobs:
           </manifest>
           EOF
 
-      - name: Inject WebView Configurations
+      - name: Inject WebView Configurations & Fix Edge-to-Edge Status Bar
         run: |
           JAVA_PATH="android/app/src/main/java/com/mohit/ecampus/MainActivity.java"
           cat << 'EOF' > $JAVA_PATH
           package com.mohit.ecampus;
 
           import android.os.Bundle;
+          import android.view.ViewGroup;
           import android.webkit.CookieManager;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
+          import androidx.core.graphics.Insets;
+          import androidx.core.view.ViewCompat;
+          import androidx.core.view.WindowInsetsCompat;
           import com.getcapacitor.BridgeActivity;
 
           public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  
+                  WebView webView = getBridge().getWebView();
+                  
+                  // PHYSICALLY PUSH WEBVIEW BELOW STATUS BAR (FIX FOR ANDROID 15)
+                  ViewCompat.setOnApplyWindowInsetsListener(webView, (v, windowInsets) -> {
+                      Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                      ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+                      
+                      // Apply top margin for Status Bar and bottom margin for Navigation Bar
+                      params.topMargin = insets.top;
+                      params.bottomMargin = insets.bottom;
+                      
+                      v.setLayoutParams(params);
+                      return windowInsets;
+                  });
+              }
+
               @Override
               public void onStart() {
                   super.onStart();
