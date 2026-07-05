@@ -45,10 +45,10 @@ jobs:
           # Inject Safe Browsing metadata
           sed -i '/<application/a \        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing" android:value="true" />' $MANIFEST_PATH
           
-          # Inject Security Config (FIXED: Using | instead of / to avoid syntax errors)
+          # Inject Security Config
           sed -i 's|<application|<application android:usesCleartextTraffic="false" android:networkSecurityConfig="@xml/network_security_config"|' $MANIFEST_PATH
 
-          # Inject Deep Linking Filter before closing activity tag (FIXED: Simplified injection)
+          # Inject Deep Linking Filter before closing activity tag
           sed -i '/<\/activity>/i \            <intent-filter android:autoVerify="true">\n                <action android:name="android.intent.action.VIEW" />\n                <category android:name="android.intent.category.DEFAULT" />\n                <category android:name="android.intent.category.BROWSABLE" />\n                <data android:scheme="https" android:host="mohitasdeveloper.github.io" android:pathPrefix="/ECampus/" />\n            </intent-filter>' $MANIFEST_PATH
 
       - name: Inject WebView Configurations & Third-Party Cookies
@@ -118,8 +118,11 @@ jobs:
       - name: Inject Signing Configuration into build.gradle
         run: |
           GRADLE_PATH="android/app/build.gradle"
-          sed -i '/buildTypes {/i \    signingConfigs {\n        release {\n            storeFile file(RELEASE_STORE_FILE)\n            storePassword RELEASE_STORE_PASSWORD\n            keyAlias RELEASE_KEY_ALIAS\n            keyPassword RELEASE_KEY_PASSWORD\n        }\n    }\n' $GRADLE_PATH
-          sed -i '/release {/a \            signingConfig signingConfigs.release' $GRADLE_PATH
+          # 1. Inject the signing config definitions
+          sed -i '/buildTypes {/i \    signingConfigs {\n        release {\n            storeFile file(RELEASE_STORE_FILE)\n            storePassword RELEASE_STORE_PASSWORD\n            keyAlias RELEASE_KEY_ALIAS\n            keyPassword RELEASE_KEY_PASSWORD\n        }\n    }' $GRADLE_PATH
+          
+          # 2. Inject it precisely inside the correct release block using 'minifyEnabled' as the anchor
+          sed -i '/minifyEnabled/i \            signingConfig signingConfigs.release' $GRADLE_PATH
 
       - name: Make Gradle Executable
         run: chmod +x ./android/gradlew
