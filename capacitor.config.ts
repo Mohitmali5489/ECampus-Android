@@ -12,8 +12,8 @@ const config: CapacitorConfig = {
   plugins: {
     StatusBar: {
       overlaysWebView: false,
-      backgroundColor: "#ffffff", // Matches your white website header
-      style: "LIGHT" // Forces the status bar text/icons (battery, time) to be dark
+      backgroundColor: "#ffffff",
+      style: "LIGHT"
     },
     Keyboard: {
       resize: 'body',
