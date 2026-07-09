@@ -20,10 +20,13 @@ const config: CapacitorConfig = {
       resizeOnFullScreen: true,
     },
     SplashScreen: {
-      launchShowDuration: 2000,
+      launchShowDuration: 0, // 🚀 FIXED: Changed from 2000 to 0 to completely eliminate the native splash double-flash
       backgroundColor: "#ffffff",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP"
+    },
+    PushNotifications: { // 🚀 ADDED: Explicit configuration to guarantee notification behaviors
+      presentationOptions: ["badge", "sound", "alert"]
     }
   }
 };
