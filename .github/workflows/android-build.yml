@@ -156,17 +156,9 @@ jobs:
       - name: Sync Capacitor Changes
         run: npx cap sync android
 
-      - name: Generate Keystore File
+      - name: Decode Permanent Keystore
         run: |
-          keytool -genkeypair -v \
-            -keystore android/app/release.keystore \
-            -alias ${{ env.KEY_ALIAS }} \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -storepass ${{ env.KEYSTORE_PASSWORD }} \
-            -keypass ${{ env.KEY_PASSWORD }} \
-            -dname "CN=Mohit, OU=ECampus, O=Developer, L=Kalyan, S=MH, C=IN"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
 
       - name: Setup Gradle Sign Environment Variables
         run: |
