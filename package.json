@@ -1,6 +1,6 @@
 {
   "name": "com.mohit.ecampus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ECampus WebView App",
   "scripts": {
     "build": "echo 'No web build needed for live URL'"
