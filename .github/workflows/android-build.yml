@@ -167,12 +167,20 @@ jobs:
           echo "RELEASE_KEY_ALIAS=${{ env.KEY_ALIAS }}" >> android/gradle.properties
           echo "RELEASE_KEY_PASSWORD=${{ env.KEY_PASSWORD }}" >> android/gradle.properties
 
-      - name: Inject Signing Configuration into build.gradle
+      - name: Inject Signing Configuration & Automate Version Code
         run: |
           GRADLE_PATH="android/app/build.gradle"
+          
+          # Automatically bump the internal versionCode using the GitHub Action Run Number
+          sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/g" $GRADLE_PATH
+          
+          # Manually set the public versionName to match your package.json
+          sed -i "s/versionName \"1.0\"/versionName \"2.0.0\"/g" $GRADLE_PATH
+          
+          # Inject Signing Config
           sed -i '/buildTypes {/i \    signingConfigs {\n        release {\n            storeFile file(RELEASE_STORE_FILE)\n            storePassword RELEASE_STORE_PASSWORD\n            keyAlias RELEASE_KEY_ALIAS\n            keyPassword RELEASE_KEY_PASSWORD\n        }\n    }' $GRADLE_PATH
           sed -i '/minifyEnabled/i \            signingConfig signingConfigs.release' $GRADLE_PATH
-
+          
       - name: Make Gradle Executable
         run: chmod +x ./android/gradlew
 
